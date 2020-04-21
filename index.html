@@ -2,10 +2,18 @@
   * {
     background: #171717;
   }
+  .center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
 </style>
 
 <center>
-  <div id="plot"></div>
+  <div id="plot" class="center"></div>
 </center>
 
 <script src="https://cdn.jsdelivr.net/npm/ola"></script>
