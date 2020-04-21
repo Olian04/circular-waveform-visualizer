@@ -1,16 +1,28 @@
-<style>
-  * {
-    background: #171717;
-  }
-  .center {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-  }
-</style>
+<!DOCTYPE html>
+<html lang="en-gb">
+  <head>
+    <title>Waveform Visualizer</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="application-name" content="Waveform Visualizer" />
+    <meta name="theme-color" content="#171717">
+    <link rel="manifest" href="manifest.json">
+    <style>
+    * {
+       background: #171717;
+    }
+    .center {
+       margin: 0;
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       -ms-transform: translate(-50%, -50%);
+       transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
 
 <center>
   <div id="plot" class="center"></div>
@@ -97,3 +109,19 @@ setInterval(() => {
   pointsToPickFrom = generatePointsToPickFrom();
 }, 60 * 1000);
 </script>
+<script>
+// Registering ServiceWorker
+if ( 'serviceWorker' in navigator ) {
+  navigator.serviceWorker.register( '/circular-waveform-visualizer/sw.js' ).then(function(registration) {
+
+    // Registration was successful
+    console.log( 'ServiceWorker registration successful. Scope: ' + registration.scope )
+  }).catch(function(err) {
+
+    // Registration failed with error
+    console.log( 'ServiceWorker registration failed. Error: ' + err);
+  });
+}
+</script>
+</body>
+</html>
