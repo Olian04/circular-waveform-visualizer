@@ -1,0 +1,17 @@
+{
+  "short_name": "Circular Wave",
+  "name": "Circular Waveform visualizer",
+  "description" : "A waveform visualizer",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "index.html",
+  "theme_color": "#171717",
+  "background_color": "#171717",
+  "icons": [
+    {
+      "src": "icon-558.png",
+      "sizes": "558x558",
+      "type": "image/png"
+    }
+  ]
+}
