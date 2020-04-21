@@ -9,44 +9,55 @@
     <meta name="theme-color" content="#171717">
     <link rel="manifest" href="manifest.json">
     <style>
-    * {
-       background: #171717;
-       overflow: hidden;
-    }
-    .center {
-       margin: 0;
-       position: absolute;
-       top: 50%;
-       left: 50%;
-       -ms-transform: translate(-50%, -50%);
-       transform: translate(-50%, -50%);
-    }
+	* {
+	  background: #171717;
+	  overflow: hidden;
+	}
+	.center {
+	  margin: 0;
+	  position: absolute;
+	  top: 50%;
+	  left: 50%;
+	  -ms-transform: translate(-50%, -50%);
+	  transform: translate(-50%, -50%);
+	}
+
+	svg polyline,
+	svg line,
+	svg path {
+	  fill: none;
+	  stroke: white;
+	  stroke-linecap: round;
+	  stroke-linejoin: round;
+	  transition: 1s;
+	}
   </style>
 </head>
 <body>
 
-<center>
-  <div id="plot" class="center"></div>
-</center>
+<svg viewBox="0 0 600 600" class="center">
+  <path id="path" d="" />
+</svg>
 
-<script src="https://cdn.jsdelivr.net/npm/ola"></script>
 <script>
 Math.random.between = (min, max) => Math.floor(Math.random()*(max-min+1)+min);
 
-const canvas = document.createElement('canvas');
-canvas.height = canvas.width = 600;
-canvas.style.height = canvas.style.width = canvas.height + 'px';
-document.getElementById('plot').appendChild(canvas);
-const ctx = canvas.getContext('2d');
+const $path = document.getElementById('path');
 
 const newRandomWave = (span = 25) => ({
   amplitude: Math.random.between(span * -1, span) || 1,
   frequency: Math.random.between(span * -1, span) || 1,
 });
 
-const center = canvas.height * 0.5;
-const radius = canvas.height * 0.25;
+const size = 600;
+const center = size * 0.5;
+const radius = size * 0.25;
 const changeTime = 1000;
+
+const Point = ({ x, y }) => ({ x, y, set({ x ,y }) {
+	this.x = x;
+  this.y = y;
+}})
 
 const f = (i) => ({
   amplitude,
@@ -59,7 +70,10 @@ const calculatePoints = (waves) => {
     const x = Math.cos(i);
     const y = Math.sin(i);
     const r = radius + waves.map(f(i)).reduce((sum, v) => sum + v, 0);
-    newPoints.push([center + x * r, center + y * r]);
+    newPoints.push(Point({ 
+    	x: center + x * r, 
+      y: center + y * r,
+    }));
   }
   return newPoints;
 }
@@ -67,40 +81,38 @@ const calculatePoints = (waves) => {
 const generatePointsToPickFrom = () => {
   console.log('Generating points to pick from');
   return Array(10).fill(0)
-  .map(() => {
-	const waves = Array(3).fill(25).map(newRandomWave);
-  	const points = calculatePoints(waves);
-    return points;
-  });
+    .map(() => {
+    const waves = Array(3).fill(25).map(newRandomWave);
+      const points = calculatePoints(waves);
+      return points;
+    });
 };
 
 let pointsToPickFrom = generatePointsToPickFrom();
   
-const pointsToUse = calculatePoints([{
+let pointsToUse = calculatePoints([{
   amplitude: 1,
   frequency: 1,
-}]).map(p => Ola({ x: p[0], y: p[1] }, changeTime));
+}]);
 
 const drawFrame = (frameNumber) => () => {
-  ctx.fillStyle = "#171717";
-  ctx.fillRect(0, 0, canvas.height, canvas.height);
-  ctx.fillStyle = "white";
-
-  for (let i = 0; i < pointsToUse.length; i++) {
-    const {x, y} = pointsToUse[i];
-    ctx.fillRect(x, y, 1, 1);
+	let path = '';
+  for (let i = 0; i < pointsToUse.length; i += 2) {
+  	const start = pointsToUse[i];
+  	const pivot = pointsToUse[i+1] || pointsToUse[0] /* Wrap around */; 
+  	const end = pointsToUse[i+2] || pointsToUse[1] /* Wrap around */;
+    path += `M${start.x},${start.y} ` /* Move to the start positio */
+    path += `Q${pivot.x},${pivot.y} ${end.x},${end.y} `;
   }
+	$path.setAttribute('d', path);
   requestAnimationFrame(drawFrame(frameNumber + 1));
 }
 
-requestAnimationFrame(drawFrame(0));
+drawFrame(0)();
 
 let index = 0;
 const changePoints = () => {
-	pointsToPickFrom[index]
-  	.forEach((p, i) => {
-    	pointsToUse[i].set({ x: p[0], y: p[1] });
-    });
+  pointsToUse = pointsToPickFrom[index];
   index = (index+1) % pointsToPickFrom.length;
 };
 changePoints();
