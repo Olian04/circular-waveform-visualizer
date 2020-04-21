@@ -2,4 +2,4 @@
 
 https://olian04.github.io/circular-waveform-visualizer/
 
-https://olian04.github.io/circular-waveform-visualizer/loop.html
+https://olian04.github.io/circular-waveform-visualizer/compose.html
