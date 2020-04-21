@@ -101,7 +101,7 @@ let pointsToUse = calculatePoints([{
   frequency: 1,
 }]);
 
-const drawFrame = (frameNumber) => () => {
+const updatePath = () => {
 	let path = '';
   for (let i = 0; i < pointsToUse.length; i += 2) {
   	const start = pointsToUse[i];
@@ -111,17 +111,25 @@ const drawFrame = (frameNumber) => () => {
     path += `Q${pivot.x},${pivot.y} ${end.x},${end.y} `;
   }
 	$path.setAttribute('d', path);
-  requestAnimationFrame(drawFrame(frameNumber + 1));
 }
 
-drawFrame(0)();
+updatePath();
 
 let index = 0;
 const changePoints = () => {
-  pointsToUse = pointsToPickFrom[index];
-  index = (index+1) % pointsToPickFrom.length;
+	requestAnimationFrame(() => {
+    pointsToUse = pointsToPickFrom[index];
+    updatePath();
+  	index = (index+1) % pointsToPickFrom.length;
+  });
 };
-changePoints();
+
+/* Double animation frame lets allows the initial circle
+ * to be drawn once before the underlying points change.
+ * This ensures that a circle is show when the application launches.
+ */
+requestAnimationFrame(changePoints);
+
 setInterval(changePoints, changeTime);
 setInterval(() => {
   // Generate new set of points to pick from every minute.
