@@ -70,57 +70,50 @@ const f = (i) => ({
   frequency
 }) => amplitude * Math.sin(frequency * i);
 
-const calculatePoints = (waves) => {
-  const newPoints = [];
+const calculatePath = (waves) => {
+  const points = [];
   for (let i = 0; i < Math.PI * 2; i += 0.001) {
     const x = Math.cos(i);
     const y = Math.sin(i);
     const r = radius + waves.map(f(i)).reduce((sum, v) => sum + v, 0);
-    newPoints.push(Point({ 
+    points.push(Point({ 
     	x: center + x * r, 
       y: center + y * r,
     }));
   }
-  return newPoints;
-}
-
-const generatePointsToPickFrom = () => {
-  console.log('Generating points to pick from');
-  return Array(10).fill(0)
-    .map(() => {
-    const waves = Array(3).fill(25).map(newRandomWave);
-      const points = calculatePoints(waves);
-      return points;
-    });
-};
-
-let pointsToPickFrom = generatePointsToPickFrom();
   
-let pointsToUse = calculatePoints([{
-  amplitude: 1,
-  frequency: 1,
-}]);
-
-const updatePath = () => {
-	let path = '';
-  for (let i = 0; i < pointsToUse.length; i += 2) {
-  	const start = pointsToUse[i];
-  	const pivot = pointsToUse[i+1] || pointsToUse[0] /* Wrap around */; 
-  	const end = pointsToUse[i+2] || pointsToUse[1] /* Wrap around */;
+  let path = '';
+  for (let i = 0; i < points.length; i += 2) {
+  	const start = points[i];
+  	const pivot = points[i+1] || points[0] /* Wrap around */; 
+  	const end = points[i+2] || points[1] /* Wrap around */;
     path += `M${start.x},${start.y} ` /* Move to the start positio */
     path += `Q${pivot.x},${pivot.y} ${end.x},${end.y} `;
   }
-	$path.setAttribute('d', path);
+  return path;
 }
 
-updatePath();
+const generatePathsToPickFrom = () => {
+  console.log('Generating points to pick from');
+  return Array(10).fill(0)
+    .map(() => {
+      const waves = Array(3).fill(25).map(newRandomWave);
+      return calculatePath(waves);
+    });
+};
+
+let pathsToPickFrom = generatePathsToPickFrom();
+  
+$path.setAttribute('d', calculatePath([{
+  amplitude: 1,
+  frequency: 1,
+}]));
 
 let index = 0;
 const changePoints = () => {
-	requestAnimationFrame(() => {
-    pointsToUse = pointsToPickFrom[index];
-    updatePath();
-  	index = (index+1) % pointsToPickFrom.length;
+  requestAnimationFrame(() => {
+    $path.setAttribute('d', pathsToPickFrom[index]);
+    index = (index+1) % pathsToPickFrom.length;
   });
 };
 
@@ -133,7 +126,7 @@ requestAnimationFrame(changePoints);
 setInterval(changePoints, changeTime);
 setInterval(() => {
   // Generate new set of points to pick from every minute.
-  pointsToPickFrom = generatePointsToPickFrom();
+  pathsToPickFrom = generatePathsToPickFrom();
 }, 60 * 1000);
 </script>
 <script>
