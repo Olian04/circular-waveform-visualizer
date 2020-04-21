@@ -9,8 +9,8 @@
   "background_color": "#171717",
   "icons": [
     {
-      "src": "icon-558.png",
-      "sizes": "558x558",
+      "src": "/circular-waveform-visualizer/icon-384.png",
+      "sizes": "384x384",
       "type": "image/png"
     }
   ]
