@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+  <head>
+    <title>Waveform Visualizer (color)</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="application-name" content="Waveform Visualizer" />
+    <meta name="theme-color" content="#171717">
+    <link rel="manifest" href="manifest.json">
+    <style>
+	:root {
+	  --background-color: #171717;
+	}
+  
+  * {
+	  background: var(--background-color);
+    transition: background 1s;
+	  -webkit-transition: background 1s;
+	  -moz-transition: background 1s;
+	  -ms-transition: background 1s;
+          -o-transition: background 1s;
+	}
+	.center {
+	  margin: 0;
+	  position: absolute;
+	  top: 50%;
+	  left: 50%;
+	  -webkit-transform: translate(-50%, -50%);
+	  -moz-transform: translate(-50%, -50%);
+	  -ms-transform: translate(-50%, -50%);
+          -o-transform: translate(-50%, -50%);
+	  transform: translate(-50%, -50%);
+	}
+
+	svg {
+	  position: relative;
+	  overflow: hidden;
+	  height: 100vh;
+	  width: 100vw;
+	}
+
+	svg polyline,
+	svg line,
+	svg path {
+	  fill: none;
+	  stroke: white;
+	  stroke-linecap: round;
+	  stroke-linejoin: round;
+	  -webkit-transition: 1s;
+	  -moz-transition: 1s;
+	  -ms-transition: 1s;
+          -o-transition: 1s;
+	  transition: 1s;
+  	  will-change: d;
+	}
+  </style>
+</head>
+<body>
+
+<svg viewBox="0 0 600 600" class="center">
+  <path id="path" d="" />
+</svg>
+
+<script>
+Math.random.between = (min, max) => Math.floor(Math.random()*(max-min+1)+min);
+
+const $path = document.getElementById('path');
+
+const newRandomWave = (span = 25) => ({
+  amplitude: Math.random.between(span * -1, span) || 1,
+  frequency: Math.random.between(span * -1, span) || 1,
+});
+
+const colors = [
+	'#334756',
+	'#2C394B',
+  '#3F3351',
+  '#1F1D36',
+  '#082032',
+  '#2D2424',
+  '#B2AB8C',
+  '#C1A57B',
+  '#E3B04B',
+  '#AD6C80',
+];
+let colorIndex = 0;
+
+const size = 600;
+const center = size * 0.5;
+const radius = size * 0.25;
+const changeTime = 1000;
+
+const Point = ({ x, y }) => ({ x, y, set({ x ,y }) {
+  this.x = x;
+  this.y = y;
+}})
+
+const f = (i) => ({
+  amplitude,
+  frequency
+}) => amplitude * Math.sin(frequency * i);
+
+const calculatePath = (waves) => {
+  const points = [];
+  for (let i = 0; i < Math.PI * 2; i += 0.01) {
+    const x = Math.cos(i);
+    const y = Math.sin(i);
+    const r = radius + waves.map(f(i)).reduce((sum, v) => sum + v, 0);
+    points.push(Point({ 
+      x: center + x * r, 
+      y: center + y * r,
+    }));
+  }
+  
+  let path = `M${points[0].x},${points[0].y} ` /* Move to the start positio */
+  for (let i = 0; i < points.length; i += 2) {
+    const pivot = points[i];
+    const end = points[i+1] || points[0] /* Wrap around */;
+    path += `Q${pivot.x},${pivot.y} ${end.x},${end.y} `;
+  }
+  return path;
+}
+
+const generatePathsToPickFrom = () => {
+  console.log('Generating points to pick from');
+  return Array(10).fill(0)
+    .map(() => {
+      const waves = Array(3).fill(25).map(newRandomWave);
+      return calculatePath(waves);
+    });
+};
+
+let pathsToPickFrom = generatePathsToPickFrom();
+  
+$path.setAttribute('d', calculatePath([{
+  amplitude: 1,
+  frequency: 1,
+}]));
+
+let index = 0;
+const changePoints = () => {
+  requestAnimationFrame(() => {
+  	document.documentElement.style.setProperty('--background-color', 
+    	colors[(colorIndex++) % colors.length]
+    );
+    $path.setAttribute('d', pathsToPickFrom[index]);
+    index = (index+1) % pathsToPickFrom.length;
+  });
+};
+
+/* Double animation frame lets allows the initial circle
+ * to be drawn once before the underlying points change.
+ * This ensures that a circle is show when the application launches.
+ */
+requestAnimationFrame(changePoints);
+
+setInterval(changePoints, changeTime);
+setInterval(() => {
+  // Generate new set of points to pick from every minute.
+  pathsToPickFrom = generatePathsToPickFrom();
+}, 60 * 1000);
+</script>
+<script>
+// Registering ServiceWorker
+if ( 'serviceWorker' in navigator ) {
+  navigator.serviceWorker.register( '/circular-waveform-visualizer/sw.js' ).then(function(registration) {
+
+    // Registration was successful
+    console.log( 'ServiceWorker registration successful. Scope: ' + registration.scope )
+  }).catch(function(err) {
+
+    // Registration failed with error
+    console.log( 'ServiceWorker registration failed. Error: ' + err);
+  });
+}
+</script>
+</body>
+</html>
