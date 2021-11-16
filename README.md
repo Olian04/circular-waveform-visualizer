@@ -13,4 +13,6 @@ I got inspired when watching a video about Fourier Transform by Grant Sanderson 
 
 **Visualizer**: https://olian04.github.io/circular-waveform-visualizer/
 
+**Visualizer (colorized version)**: https://olian04.github.io/circular-waveform-visualizer/color.html
+
 **3Blue1Brown video**: https://www.youtube.com/watch?v=spUNpyF58BY
