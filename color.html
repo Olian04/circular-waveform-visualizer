@@ -72,20 +72,6 @@ const newRandomWave = (span = 25) => ({
   frequency: Math.random.between(span * -1, span) || 1,
 });
 
-const colors = [
-	'#334756',
-	'#2C394B',
-  '#3F3351',
-  '#1F1D36',
-  '#082032',
-  '#2D2424',
-  '#B2AB8C',
-  '#C1A57B',
-  '#E3B04B',
-  '#AD6C80',
-];
-let colorIndex = 0;
-
 const size = 600;
 const center = size * 0.5;
 const radius = size * 0.25;
@@ -122,12 +108,16 @@ const calculatePath = (waves) => {
   return path;
 }
 
+const waveToColor = ({ amplitude, frequency }) => Math.abs(amplitude) + Math.abs(frequency);
+
 const generatePathsToPickFrom = () => {
   console.log('Generating points to pick from');
   return Array(10).fill(0)
     .map(() => {
       const waves = Array(3).fill(25).map(newRandomWave);
-      return calculatePath(waves);
+      const color = `rgb(${waveToColor(waves[0])},${waveToColor(waves[1])},${waveToColor(waves[2])})`;
+      const path = calculatePath(waves);
+      return [path, color];
     });
 };
 
@@ -141,10 +131,9 @@ $path.setAttribute('d', calculatePath([{
 let index = 0;
 const changePoints = () => {
   requestAnimationFrame(() => {
-  	document.documentElement.style.setProperty('--background-color', 
-    	colors[(colorIndex++) % colors.length]
-    );
-    $path.setAttribute('d', pathsToPickFrom[index]);
+  	const [path, color] = pathsToPickFrom[index];
+  	document.documentElement.style.setProperty('--background-color', color);
+    $path.setAttribute('d', path);
     index = (index+1) % pathsToPickFrom.length;
   });
 };
