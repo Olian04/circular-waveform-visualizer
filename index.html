@@ -11,6 +11,7 @@
     <style>
 :root {
   --background-color: #171717;
+  --text-color: rgba(255, 255, 255, 0.7);
 }
   
 document, body {
@@ -22,18 +23,26 @@ document, body {
   -o-transition: background 1s;
 }
 
-.notification {
+#button-box {
   position: absolute;
-  z-index: 10000;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 15px;
-  padding: 10px;
-  min-width: fit-content;
-  background: rgba(255, 255, 255, 0.8);
-  transition: all 0.5s ease-in-out;
-  
+  opacity: 1;
+  -webkit-transition: opacity 0.5s;
+  -moz-transition: opacity 0.5s;
+  -ms-transition: opacity 0.5s;
+  -o-transition: opacity 0.5s;
+  transition: opacity 0.5s;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#button-box button {
+  background: transparent;
+  border: 2px solid var(--text-color);
+  border-radius: 5px;
+  padding: 20px;
+  font-size: 2em;
+  color: var(--text-color);
 }
 
 .center {
@@ -53,6 +62,12 @@ svg {
   overflow: hidden;
   height: 100vh;
   width: 100vw;
+  
+  -webkit-transition: opacity 0.5s;
+  -moz-transition: opacity 0.5s;
+  -ms-transition: opacity 0.5s;
+  -o-transition: opacity 0.5s;
+  transition: opacity 0.5s;
 }
 
 svg polyline,
@@ -77,10 +92,16 @@ svg path {
   <path id="path" d="" />
 </svg>
 
+<div id="button-box" class="center">
+  <button onclick="startWithoutColors()">Start Regular</button>
+  <button onclick="startWithColors()">Start With Colors</button>
+</div>
+
 <script>
 Math.random.between = (min, max) => Math.floor(Math.random()*(max-min+1)+min);
 
 const $path = document.getElementById('path');
+const $buttonBox = document.getElementById('button-box');
 
 const newRandomWave = (span = 25) => ({
   amplitude: Math.random.between(span * -1, span) || 1,
@@ -91,7 +112,7 @@ const size = 600;
 const center = size * 0.5;
 const radius = size * 0.25;
 const changeTime = 1000;
-let changeBgColor = false;
+let shouldChangeBgColor = false;
 
 const Point = ({ x, y }) => ({ x, y, set({ x ,y }) {
   this.x = x;
@@ -148,7 +169,7 @@ let index = 0;
 const changePoints = () => {
   requestAnimationFrame(() => {
   	const [path, color] = pathsToPickFrom[index];
-    if (changeBgColor) {
+    if (shouldChangeBgColor) {
   		document.documentElement.style.setProperty('--background-color', color);
     } else {
     	document.documentElement.style.removeProperty('--background-color');
@@ -158,44 +179,53 @@ const changePoints = () => {
   });
 };
 
-/* Double animation frame lets allows the initial circle
- * to be drawn once before the underlying points change.
- * This ensures that a circle is show when the application launches.
- */
-requestAnimationFrame(changePoints);
 
-setInterval(changePoints, changeTime);
-setInterval(() => {
-  // Generate new set of points to pick from every minute.
-  pathsToPickFrom = generatePathsToPickFrom();
-}, 60 * 1000);
+$path.style.opacity = '0%';
 
-const toggleColors = () => {
-	changeBgColor = !changeBgColor;
+let intervalID_change = null;
+let intervalID_generate = null;
+const start = () => {
+	$path.style.opacity = '100%';
+  $buttonBox.style.opacity = '0%';
+  $buttonBox.style.pointerEvents = 'none'; 
+  /* Double animation frame lets allows the initial circle
+   * to be drawn once before the underlying points change.
+   * This ensures that a circle is show when the application launches.
+   */
+  requestAnimationFrame(changePoints);
+
+  intervalID_change = setInterval(changePoints, changeTime);
+  intervalID_generate = setInterval(() => {
+    // Generate new set of points to pick from every minute.
+    pathsToPickFrom = generatePathsToPickFrom();
+  }, 60 * 1000);
+  
+  
+  document.addEventListener('mouseup', stop);
+  document.addEventListener('ontouchend', stop);
 }
-document.body.addEventListener('mousedown', toggleColors);
-document.body.addEventListener('touchstart', toggleColors);
 
-// Notification
-const notify = document.createElement('div');
-notify.classList.add('notification');
-document.body.appendChild(notify);
-notify.innerHTML = `<center><b>Tap/click to toggle colors<b></center>`;
-let timeoutID;
-const dismiss = () => {
-  notify.style.opacity = '0%';
-
-  clearTimeout(timeoutID);
-  document.body.removeEventListener('mousedown', dismiss);
-  document.body.removeEventListener('touchstart', dismiss);
-
-  setTimeout(() => {
-    notify.remove();
-  }, 1000);
+const stop = () => {
+	$path.style.opacity = '0%';
+  $buttonBox.style.opacity = '100%';
+  $buttonBox.style.pointerEvents = 'auto'; 
+  
+  clearInterval(intervalID_change);
+  clearInterval(intervalID_generate);
+  
+  document.removeEventListener('mouseup', stop);
+  document.removeEventListener('ontouchend', stop);
 }
-document.body.addEventListener('mousedown', dismiss);
-document.body.addEventListener('touchstart', dismiss);
-timeoutID = setTimeout(dismiss, 10 * 1000 /* 10 seconds */);
+
+const startWithoutColors = () => {
+	shouldChangeBgColor = false;
+  start();
+}
+
+const startWithColors = () => {
+	shouldChangeBgColor = true;
+  start();
+}
 </script>
 <script>
 // Registering ServiceWorker
