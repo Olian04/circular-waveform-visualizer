@@ -1,8 +1,13 @@
 # circular-waveform-visualizer
 
+## What?
+
+A set or sin waves determines the shape of an object. Then every second the object morphs into another object determined by a new set of sin waves.
+
 ## Why?
 
 I got inspired when watching a video about Fourier Transform by Grant Sanderson (3Blue1Brown on youtube). So i decided make my own little visualizer.
+
 ## How?
 
 **Drawing a single shape:** It generates 3 sin waves each with a random amplitude and frequency (between -25 and 25). It then draws a circle, and determines the radius of the circle individually for each point drawn. The radius is determined by the additive sum of each of those 3 sin waves given the current angle.
