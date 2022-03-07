@@ -1,16 +1,21 @@
 {
   "short_name": "Circular Wave",
   "name": "Circular Waveform visualizer",
-  "description" : "A waveform visualizer",
+  "description": "A waveform visualizer",
   "display": "standalone",
   "orientation": "portrait",
-  "start_url": "index.html",
+  "start_url": "/circular-waveform-visualizer/index.html",
   "theme_color": "#171717",
   "background_color": "#171717",
   "icons": [
     {
-      "src": "/circular-waveform-visualizer/icon-384.png",
-      "sizes": "384x384",
+      "src": "/circular-waveform-visualizer/assets/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/circular-waveform-visualizer/assets/android-chrome-512x512.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]

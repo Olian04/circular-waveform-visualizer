@@ -3,13 +3,13 @@ self.addEventListener('install', function(event) {
   event.waitUntil(
 
     // Open a cache
-    caches.open('v2').then(function(cache) {
+    caches.open('v3').then(function(cache) {
 
       // Define what we want to cache
       return cache.addAll([
         '/',
         'index.html',
-        'icon-384.png',
+        'favicon.ico',
         'manifest.json',
       ]);
     })
