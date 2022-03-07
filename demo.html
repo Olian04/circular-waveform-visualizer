@@ -111,21 +111,47 @@ const generatePath = () => {
   const path = calculatePath(waves);
   return path;
 }
- 
-$path.setAttribute('d', calculatePath([{
-  amplitude: 1,
-  frequency: 1,
-}]));
+
+let index = 0;
+let pathMemory = [
+  calculatePath([{
+    amplitude: 1,
+    frequency: 1,
+	}])
+];
+$path.setAttribute('d', pathMemory[index]);
 
 const changePoints = () => {
   requestAnimationFrame(() => {
-  	const path = generatePath();
-    $path.setAttribute('d', path);
+    if (index < 0) {
+      index = 0;
+    } else if (index >= pathMemory.length) {
+      pathMemory.push(generatePath());
+    }
+    $path.setAttribute('d', pathMemory[index]);
   });
 };
 
-document.addEventListener('mouseup', changePoints);
-document.addEventListener('ontouchend', changePoints);
+document.addEventListener('wheel', (e) => {
+  const isDownScroll = e.wheelDelta < 0;
+  const isUpScroll = e.wheelDelta > 0;
+  if (isDownScroll) {
+  	index++;
+  } else if (isUpScroll) {
+  	index--;
+  }
+  changePoints();
+});
+
+
+document.addEventListener('mouseup', () => {
+  index++;
+  changePoints();
+});
+document.addEventListener('ontouchend', () => {
+  index++;
+  changePoints();
+});
 </script>
 </body>
 </html>
