@@ -3,7 +3,7 @@ self.addEventListener('install', function(event) {
   event.waitUntil(
 
     // Open a cache
-    caches.open('v3').then(function(cache) {
+    caches.open('v4').then(function(cache) {
 
       // Define what we want to cache
       return cache.addAll([
