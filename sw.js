@@ -7,10 +7,10 @@ self.addEventListener('install', function(event) {
 
       // Define what we want to cache
       return cache.addAll([
-        '/circular-waveform-visualizer/index.html',
-        '/circular-waveform-visualizer/manifest.json',
-        '/circular-waveform-visualizer/assets/favicon.ico',
-        '/circular-waveform-visualizer/assets/android-chrome-512x512.png',
+        'index.html',
+        'manifest.json',
+        'assets/favicon.ico',
+        'assets/android-chrome-512x512.png',
       ]);
     })
   );
