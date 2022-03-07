@@ -19,3 +19,5 @@ I got inspired when watching a video about Fourier Transform by Grant Sanderson 
 **Visualizer**: https://olian04.github.io/circular-waveform-visualizer/
 
 **3Blue1Brown video**: https://www.youtube.com/watch?v=spUNpyF58BY
+
+**Demo Fiddle**: https://jsfiddle.net/x2zbe18d/12/
