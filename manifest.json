@@ -4,7 +4,7 @@
   "description": "A waveform visualizer",
   "display": "standalone",
   "orientation": "portrait",
-  "start_url": "index.html",
+  "start_url": "/circular-waveform-visualizer/index.html",
   "theme_color": "#171717",
   "background_color": "#171717",
   "icons": [
