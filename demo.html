@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+  <head>
+    <title>Waveform Visualizer | Demo</title>
+    
+    <style>
+document, body {
+  background: #171717;
+  transition: background 1s;
+  -webkit-transition: background 1s;
+  -moz-transition: background 1s;
+  -ms-transition: background 1s;
+  -o-transition: background 1s;
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+svg {
+  position: relative;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  
+  -webkit-transition: opacity 0.5s;
+  -moz-transition: opacity 0.5s;
+  -ms-transition: opacity 0.5s;
+  -o-transition: opacity 0.5s;
+  transition: opacity 0.5s;
+}
+
+svg polyline,
+svg line,
+svg path {
+  fill: none;
+  stroke: white;
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  -webkit-transition: 1s;
+  -moz-transition: 1s;
+  -ms-transition: 1s;
+  -o-transition: 1s;
+  transition: 1s;
+  will-change: d;
+}
+  </style>
+</head>
+<body>
+
+<svg viewBox="0 0 600 600" class="center">
+  <path id="path" d="" />
+</svg>
+
+<script>
+Math.random.between = (min, max) => Math.floor(Math.random()*(max-min+1)+min);
+
+const $path = document.getElementById('path');
+
+const newRandomWave = (span = 25) => ({
+  amplitude: Math.random.between(span * -1, span) || 1,
+  frequency: Math.random.between(span * -1, span) || 1,
+});
+
+const size = 600;
+const center = size * 0.5;
+const radius = size * 0.25;
+
+const Point = ({ x, y }) => ({ x, y, set({ x ,y }) {
+  this.x = x;
+  this.y = y;
+}})
+
+const f = (i) => ({
+  amplitude,
+  frequency
+}) => amplitude * Math.sin(frequency * i);
+
+const calculatePath = (waves) => {
+  const points = [];
+  for (let i = 0; i < Math.PI * 2; i += 0.01) {
+    const x = Math.cos(i);
+    const y = Math.sin(i);
+    const r = radius + waves.map(f(i)).reduce((sum, v) => sum + v, 0);
+    points.push(Point({ 
+      x: center + x * r, 
+      y: center + y * r,
+    }));
+  }
+  
+  let path = `M${points[0].x},${points[0].y} ` /* Move to the start positio */
+  for (let i = 0; i < points.length; i += 2) {
+    const pivot = points[i];
+    const end = points[i+1] || points[0] /* Wrap around */;
+    path += `Q${pivot.x},${pivot.y} ${end.x},${end.y} `;
+  }
+  return path;
+}
+
+const generatePath = () => {
+	const waves = Array(3).fill(25).map(newRandomWave);
+  const path = calculatePath(waves);
+  return path;
+}
+ 
+$path.setAttribute('d', calculatePath([{
+  amplitude: 1,
+  frequency: 1,
+}]));
+
+const changePoints = () => {
+  requestAnimationFrame(() => {
+  	const path = generatePath();
+    $path.setAttribute('d', path);
+  });
+};
+
+document.addEventListener('mouseup', changePoints);
+document.addEventListener('ontouchend', changePoints);
+</script>
+</body>
+</html>
