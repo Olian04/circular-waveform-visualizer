@@ -10,6 +10,7 @@ self.addEventListener('install', function(event) {
         '/',
         'index.html',
         'favicon.ico',
+        'android-chrome-512x512.png',
         'manifest.json',
       ]);
     })
