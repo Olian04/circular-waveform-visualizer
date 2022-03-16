@@ -22,4 +22,4 @@ I got inspired when watching a video about Fourier Transform by Grant Sanderson 
 
 **Demo Fiddle**: https://jsfiddle.net/8kyodc5q/28/
 
-**Demo site**: https://olian04.github.io/circular-waveform-visualizer/demo.html
+**Demo site**: https://olian04.github.io/circular-waveform-visualizer/demo
