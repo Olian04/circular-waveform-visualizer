@@ -2,7 +2,7 @@
 
 ## What?
 
-A set or sin waves determines the shape of an object. Then every second the object morphs into another object determined by a new set of sin waves.
+A set of sin waves determines the shape of an object. Then every second the object morphs into another object determined by a new set of sin waves.
 
 ## Why?
 
